@@ -1,8 +1,7 @@
 import { type UiWalletAccount, useSignIn, useWalletUi, WalletUiDropdown } from "@wallet-ui/react";
 import { Fingerprint, PlugZap, Wallet } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useSiwsSession } from "../../auth/data-access/useSession";
-import { buildSiwsMessage } from "../../auth/feature/sessionMessage";
 import { useBootstrap } from "../../consent/data-access/useBootstrap";
 import type { ActorMode } from "../../../lib/types";
 
@@ -10,16 +9,6 @@ export function WalletGate() {
   const [actor, setActor] = useState<ActorMode>("patient");
   const { account, connected, wallet } = useWalletUi();
   const bootstrap = useBootstrap();
-  const nonce = useMemo(() => crypto.randomUUID(), []);
-  const message =
-    bootstrap.data && account
-      ? buildSiwsMessage({
-        domain: bootstrap.data.walletAuth.domain,
-        statement: bootstrap.data.walletAuth.statement,
-        walletAddress: account.address,
-        nonce
-      })
-      : undefined;
 
   return (
     <section className="grid gap-3 rounded-lg border border-pulse/20 bg-pulse/[0.06] p-4 sm:grid-cols-[1fr_auto] sm:items-center">
@@ -44,13 +33,12 @@ export function WalletGate() {
         <div className="wallet-ui-shell">
           <WalletUiDropdown label={connected ? "Wallet" : "Connect"} />
         </div>
-        {wallet && account && bootstrap.data && message ? (
+        {wallet && account && bootstrap.data ? (
           <SiwsButton
             account={account}
             actor={actor}
             domain={bootstrap.data.walletAuth.domain}
-            message={message}
-            nonce={nonce}
+            nonce={bootstrap.data.challenge}
             statement={bootstrap.data.walletAuth.statement}
             walletAddress={account.address}
           />
@@ -69,7 +57,6 @@ function SiwsButton(props: {
   account: UiWalletAccount;
   actor: ActorMode;
   domain: string;
-  message: string;
   nonce: string;
   statement: string;
   walletAddress: string;
@@ -103,7 +90,9 @@ function SiwsButton(props: {
               domain: props.domain,
               statement: props.statement,
               nonce: props.nonce,
-              signature: bytesToHex(result.signature)
+              signature: bytesToHex(result.signature),
+              signatureBytes: Array.from(result.signature),
+              signedMessage: Array.from(result.signedMessage)
             });
           } catch (caught) {
             setError(caught instanceof Error ? caught.message : "Connected wallet cannot complete SIWS.");

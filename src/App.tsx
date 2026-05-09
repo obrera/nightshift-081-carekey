@@ -41,7 +41,7 @@ export function App() {
         <section className="grid gap-4 md:grid-cols-3">
           <Capability icon={<BadgeCheck size={20} />} label="Patient pass" text="Create, approve, extend, and revoke scoped releases." />
           <Capability icon={<Building2 size={20} />} label="Provider verifier" text="Check release codes before pulling protected records." />
-          <Capability icon={<Activity size={20} />} label="Clinic issuance" text="Queue approved packets for server-signed MPL Core passes." />
+          <Capability icon={<Activity size={20} />} label="Wallet issuance" text="Sign approved packets with the connected wallet before recording the MPL Core pass." />
         </section>
 
         <AuditTrail />

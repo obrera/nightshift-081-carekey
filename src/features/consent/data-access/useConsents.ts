@@ -25,11 +25,17 @@ export function useCreateConsent(wallet?: string) {
   });
 }
 
-export function useConsentAction(action: "approve" | "revoke" | "extend" | "issue") {
+export function useConsentAction(action: "approve" | "revoke" | "extend", wallet?: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: { id: string; hours?: number }) =>
-      postJson<{ consent: Consent }>(`/api/consents/${payload.id}/${action}`, action === "extend" ? { hours: payload.hours ?? 72 } : {}),
+    mutationFn: (payload: { id: string; hours?: number }) => {
+      const session = queryClient.getQueryData<Session>(["session"]);
+      return postJson<{ consent: Consent }>(`/api/consents/${payload.id}/${action}`, {
+        ...(action === "extend" ? { hours: payload.hours ?? 72 } : {}),
+        sessionId: session?.sessionId ?? "",
+        walletAddress: wallet ?? ""
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["consents"] });
       queryClient.invalidateQueries({ queryKey: ["audit"] });

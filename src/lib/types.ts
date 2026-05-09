@@ -2,6 +2,7 @@ export type ActorMode = "patient" | "provider" | "clinic";
 
 export type Bootstrap = {
   network: string;
+  mpl: MplStatus;
   challenge: string;
   releaseScopes: string[];
   walletAuth: {
@@ -44,7 +45,25 @@ export type AuditEvent = {
 };
 
 export type MplStatus = {
+  chain: string;
   configured: boolean;
   missing: string[];
+  mode: "wallet-signed";
   network: string;
+  programAddress: string;
+  rpcUrl: string;
+};
+
+export type IssuePlan = {
+  consent: Consent;
+  issue: {
+    configured: boolean;
+    missing: string[];
+    mode: "wallet-signed";
+    name: string;
+    owner: string;
+    programAddress: string;
+    uri: string;
+  };
+  mpl: MplStatus;
 };

@@ -11,8 +11,8 @@ Patients create scoped, time-boxed release passes; providers verify release code
 - Hono JSON API and static frontend serving from one runtime
 - SQLite durability through Bun's native SQLite runtime
 - Solana wallet access uses the real `@wallet-ui/react` provider and connected wallet account state
-- Server-side Solana transactions use `@solana/kit`
-- MPL Core server dependency: `@obrera/mpl-core-kit-lib`
+- Client-side wallet transactions use `@solana/kit`
+- MPL Core dependency: `@obrera/mpl-core-kit-lib`
 
 ## Runtime
 
@@ -31,25 +31,22 @@ bun run lint
 bun run verify:runtime
 ```
 
-`verify:runtime` exercises the API directly with deterministic wallet strings: it creates a SIWS session payload, creates a consent packet, approves it, verifies the release code, and calls the same issue endpoint used by the UI. With no MPL config it must pass in degraded mode by receiving `409 missing_config`.
+`verify:runtime` exercises the API directly with a generated Solana keypair: it signs and verifies SIWS, creates a consent packet, approves it, verifies the release code, and checks the wallet-signed MPL issue plan. It must not pass by relying on `missing_config`.
 
-Strict live issuance:
+Strict live issuance requires a connected browser wallet:
 
 ```bash
-CAREKEY_EXPECT_ISSUED=true \
-CAREKEY_BASE_URL=https://carekey081.colmena.dev \
-CAREKEY_VERIFY_WALLET=<patient-wallet> \
-bun run verify:runtime
+bun run dev
 ```
+
+Connect a wallet, sign in, approve a packet, then use "Sign and issue MPL pass" in the wallet-signed MPL queue. The client builds the MPL Core `createV1` transaction and the connected wallet signs and submits it.
 
 ## Environment
 
 - `CAREKEY_DB_PATH`: SQLite file path, defaults to `data/carekey.sqlite`
-- `MPL_RPC_URL`: Solana RPC URL
-- `MPL_ISSUER_PRIVATE_KEY`: server issuer key material
-- `MPL_ISSUER_ADDRESS`: issuer address
+- `CAREKEY_MPL_RPC_URL`: Solana RPC URL, defaults to devnet
 
-When the MPL variables are missing, `/api/consents/:id/issue` returns `409 missing_config` and does not fake asset or transaction data. When configured, the server builds, signs, and submits a real MPL Core `createV1` transaction through `@solana/kit` and returns the asset address and transaction signature only after send succeeds.
+The server does not hold an issuer private key. `GET /api/consents/:id/issue-plan` returns wallet-signed MPL metadata, and the browser builds and submits the MPL Core `createV1` transaction through the connected wallet. `POST /api/consents/:id/issue` records the asset and signature only after the client reports a wallet-signed transaction result for the signed-in patient wallet.
 
 ## API
 
@@ -63,6 +60,7 @@ When the MPL variables are missing, `/api/consents/:id/issue` returns `409 missi
 - `POST /api/consents/:id/revoke`
 - `POST /api/consents/:id/extend`
 - `GET /api/verify/:code`
+- `GET /api/consents/:id/issue-plan`
 - `POST /api/consents/:id/issue`
 - `GET /api/audit`
 

@@ -12,6 +12,8 @@ export function useSiwsSession() {
       statement: string;
       nonce: string;
       signature: string;
+      signatureBytes: number[];
+      signedMessage: number[];
     }) => postJson<Session>("/api/auth/siws", payload),
     onSuccess: (session) => {
       queryClient.setQueryData(["session"], session);

@@ -43,17 +43,17 @@ Safest fallback used: manually created the same requested stack in this repo onl
 - Hono backend serving JSON API and built frontend: complete
 - Durable SQLite state with Bun native SQLite: complete
 - Wallet-first SIWS auth path through `@wallet-ui/react`: complete
-- Real MPL Core `createV1` transaction construction and submission path: complete
-- Missing MPL config returns `409 missing_config`: complete
+- Real client-side MPL Core `createV1` transaction construction and wallet submission path: complete
+- Server-side issuer config removed from the issuance path: complete
 - Runtime verification script: complete
 - Docker and compose deployment files: complete
 
 ## Product Notes
 
-CareKey is not a generic CRUD dashboard. The core primitive is a patient-owned, time-boxed consent pass. A provider verifies a short release code against backend state, and a clinic operator issues the approved release as an MPL Core access credential when Solana issuer configuration is present.
+CareKey is not a generic CRUD dashboard. The core primitive is a patient-owned, time-boxed consent pass. A provider verifies a short release code against backend state, and the patient wallet signs the approved release as an MPL Core access credential.
 
 Ownership matters because the patient wallet anchors the consent credential. The credential can be checked without relying on username/password identity and can represent a constrained authorization window for medical record release.
 
-## Server-Signed Mint Disclosure
+## Wallet-Signed Mint Disclosure
 
-The server owns the issuer path. After approval, `/api/consents/:id/issue` builds, signs, and submits an MPL Core `createV1` transaction to the patient wallet only when `MPL_RPC_URL`, `MPL_ISSUER_PRIVATE_KEY`, and `MPL_ISSUER_ADDRESS` are configured. Missing configuration returns a clear `409 missing_config` response and no fake asset or transaction fields.
+The server only owns consent state, SIWS verification, and the issue plan. After approval, the browser fetches `/api/consents/:id/issue-plan`, builds an MPL Core `createV1` transaction, and the connected patient wallet signs and submits it. `/api/consents/:id/issue` records the asset address and transaction signature after the wallet-signed transaction path reports success.

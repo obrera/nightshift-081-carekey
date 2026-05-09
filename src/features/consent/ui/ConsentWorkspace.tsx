@@ -10,9 +10,9 @@ export function ConsentWorkspace() {
   const bootstrap = useBootstrap();
   const consents = useConsents(account?.address);
   const createConsent = useCreateConsent(account?.address);
-  const approve = useConsentAction("approve");
-  const revoke = useConsentAction("revoke");
-  const extend = useConsentAction("extend");
+  const approve = useConsentAction("approve", account?.address);
+  const revoke = useConsentAction("revoke", account?.address);
+  const extend = useConsentAction("extend", account?.address);
   const [providerName, setProviderName] = useState("Northline Imaging");
   const [verifierWallet, setVerifierWallet] = useState("Vote111111111111111111111111111111111111111");
   const [hoursValid, setHoursValid] = useState(72);

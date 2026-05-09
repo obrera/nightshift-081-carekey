@@ -6,9 +6,7 @@ services:
     environment:
       PORT: "8787"
       CAREKEY_DB_PATH: /app/data/carekey.sqlite
-      MPL_RPC_URL: ${MPL_RPC_URL:-}
-      MPL_ISSUER_PRIVATE_KEY: ${MPL_ISSUER_PRIVATE_KEY:-}
-      MPL_ISSUER_ADDRESS: ${MPL_ISSUER_ADDRESS:-}
+      CAREKEY_MPL_RPC_URL: ${CAREKEY_MPL_RPC_URL:-https://api.devnet.solana.com}
     volumes:
       - carekey_sqlite:/app/data
     networks:
