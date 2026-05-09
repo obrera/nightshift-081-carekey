@@ -1,0 +1,30 @@
+services:
+  carekey:
+    build: .
+    container_name: carekey081
+    restart: unless-stopped
+    environment:
+      PORT: "8787"
+      CAREKEY_DB_PATH: /app/data/carekey.sqlite
+      MPL_RPC_URL: ${MPL_RPC_URL:-}
+      MPL_ISSUER_PRIVATE_KEY: ${MPL_ISSUER_PRIVATE_KEY:-}
+      MPL_ISSUER_ADDRESS: ${MPL_ISSUER_ADDRESS:-}
+    volumes:
+      - carekey_sqlite:/app/data
+    networks:
+      - default
+      - dokploy-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.carekey081.rule=Host(`carekey081.colmena.dev`)
+      - traefik.http.routers.carekey081.entrypoints=websecure
+      - traefik.http.routers.carekey081.tls.certresolver=letsencrypt
+      - traefik.http.services.carekey081.loadbalancer.server.port=8787
+
+volumes:
+  carekey_sqlite:
+
+networks:
+  default:
+  dokploy-network:
+    external: true

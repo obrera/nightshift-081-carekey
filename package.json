@@ -1,0 +1,45 @@
+{
+  "name": "carekey",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && vite build && tsc -p tsconfig.server.json",
+    "check-types": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.server.json --noEmit",
+    "ci": "bun run check-types && bun run lint && bun run build && bun run verify:runtime",
+    "dev": "vite --host 0.0.0.0",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "preview": "vite preview --host 0.0.0.0",
+    "server": "bun run server/index.ts",
+    "verify:issue": "bun run scripts/verify-runtime.ts",
+    "verify:runtime": "bun run scripts/verify-runtime.ts"
+  },
+  "dependencies": {
+    "@obrera/mpl-core-kit-lib": "0.0.2",
+    "@solana/kit": "6.8.0",
+    "@tanstack/react-query": "5.99.0",
+    "@tailwindcss/vite": "4.2.2",
+    "@vitejs/plugin-react": "5.2.0",
+    "@wallet-ui/react": "4.0.3",
+    "hono": "4.12.18",
+    "lucide-react": "1.8.0",
+    "react": "19.2.5",
+    "react-dom": "19.2.5",
+    "vite": "7.3.2",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.4",
+    "@types/node": "24.12.2",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "eslint": "9.39.4",
+    "eslint-plugin-react-hooks": "7.0.1",
+    "eslint-plugin-react-refresh": "0.5.2",
+    "globals": "16.5.0",
+    "tailwindcss": "4.2.2",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.58.2"
+  }
+}
